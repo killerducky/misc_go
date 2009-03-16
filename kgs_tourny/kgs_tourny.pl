@@ -171,7 +171,8 @@ if ($last_unfinished != $last_round) {
 }
 print OUT "<br>\n";
 
-printf OUT "<table border=\"1\"><tr><td>%3s</td> <td>%20s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>", "id", "name", "played", "won", "lost", "full<br>bye";
+printf OUT "<table border=\"1\"><tr><td>%3s</td> <td>%20s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td>", 
+   "id", "name", "total", "played", "won", "lost", "full<br>bye";
 foreach $round (sort numeric keys %{$tdb{rounds}}) {
    printf OUT "  <td>%6s</td>", "rnd $round" . ($tdb{rounds}{$round}{unfinished} ? "*" : "");
 }
@@ -219,9 +220,10 @@ foreach $name (sort bytotal keys %{$tdb{names}}) {
 
 
 foreach $name (sort bytotal keys %{$tdb{names}}) {
-   printf OUT "<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td>", 
+   printf OUT "<tr><td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td> <td>%s</td>", 
       $tdb{names}{$name}{place}, 
       $name, 
+      $tdb{names}{$name}{rounds}{$last_unfinished}{total},
       $tdb{names}{$name}{rounds_played},
       $tdb{names}{$name}{num_win},
       $tdb{names}{$name}{num_loss},
@@ -278,7 +280,7 @@ sub totalstring {
 
 sub bytotal {
    if ($last_unfinished == 0) {
-      $b <=> $a;  # probably sort by rank first, also there is mcmahon to think about
+      uc($a) <=> uc($b);  # probably sort by rank first, also there is mcmahon to think about
    } else {
       $tdb{names}{$b}{rounds}{$last_unfinished}{total} <=> $tdb{names}{$a}{rounds}{$last_unfinished}{total} or
       $tdb{names}{$b}{sos}   <=> $tdb{names}{$a}{sos} or
