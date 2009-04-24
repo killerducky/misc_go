@@ -245,12 +245,14 @@ foreach $name (sort bytotal keys %{$tdb{names}}) {
          $oppid = $tdb{names}{$opp}{place};
          $sgflink = "<a href=$tdb{names}{$name}{rounds}{$round}{sgf}>";
       }
-      printf OUT "  <td>%s%3s%s %5s%s</td>", 
+      printf OUT "  <td bgcolor=\"%s\">%s%3s%s %5s%s</td>", 
+         &resultcolor($tdb{names}{$name}{rounds}{$round}{result}), 
          $sgflink,
          $oppid, 
          &resultstring($tdb{names}{$name}{rounds}{$round}{result}), 
          &totalstring($tdb{names}{$name}{rounds}{$round}{total}),
-         $sgflink ? "" : "</a>";
+         $sgflink ? "" : "</a>"
+         ;
    }
    printf OUT "<td>%0.1f</td>", $tdb{names}{$name}{sos};
    printf OUT "<td>%0.1f</td>", $tdb{names}{$name}{sodos};
@@ -260,6 +262,13 @@ foreach $name (sort bytotal keys %{$tdb{names}}) {
 print OUT "</table>\n";
 exit;
 
+sub resultcolor {
+   my $resultint = shift @_;
+   return ($resultint ==   1) ? "lime" : 
+          ($resultint ==   0) ? "#ff0000" : 
+          ($resultint == 0.5) ? "#ffffff" : 
+          ($resultint == $UNFINISHED_RESULT) ? "#ffffff" : "#ffffff";
+}
 
 sub resultstring {
    my $resultint = shift @_;
