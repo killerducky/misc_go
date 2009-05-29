@@ -65,13 +65,14 @@ class Rating:
          self.rating = self.aga2lin(rating)
       elif (style == "lin"):
          self.rating = rating
+      elif (style == "dankyu"):
+         self.rating = self.dankyu2lin(rating)
       else: raise
    def __str__(self, style="dankyu", precision=-1):
       if (style == "dankyu"):
-         if precision == -1: precision = 0
          tmp = self.lin2aga(self.rating)
-         if (tmp < 0): return "%0.*f%s" % (precision, -tmp, "k")
-         else:         return "%0.*f%s" % (precision,  tmp, "d")
+         if (tmp < 1): return "%d%s" % (-tmp, "k")
+         else:         return "%d%s" % ( tmp, "d")
       elif (style == "aga"):
          if precision == -1: precision = 2
          return "%0.*f" % (precision, self.lin2aga(self.rating))
@@ -86,6 +87,10 @@ class Rating:
    def aga2lin(self, rating_aga):
       if (rating_aga < 0): return rating_aga+2
       else:                return rating_aga
+   def dankyu2lin(self, rating_dankyu):
+      if   (rating_dankyu[-1] == "d"): return  float(rating_dankyu[:-1]) + 0.5
+      elif (rating_dankyu[-1] == "k"): return -float(rating_dankyu[:-1]) + 2 - 0.5
+      else: raise
    def linear_weakest(self):
       return math.floor(self.rating)
       #if (self.rating >= 1): return math.floor(self.rating)
@@ -102,10 +107,7 @@ labels_dankyu = [Rating(x, "aga") for x in [-25,-24,-23,-22,-21,-20,-19,-18,-17,
 labels_USCF = [500, 1000, 1500, 2000, 2500]
 
 
-#def scale(x, min, max):
-def scale(x):
-   minrate = -23.99  # weakest 25k
-   maxrate = 9.99    # strongest 9d
+def scale(x, minrate=-23.99, maxrate=9.99):
    return math.floor((x-minrate)/(maxrate-minrate)*10000)/100   # should do the rounding in the display
 
 def scale_USCF(x):
@@ -145,5 +147,106 @@ url.append("&chxp=0,"  + ",".join([str(scale(x.linear_weakest())) for x in label
 url.append("|2,"       + ",".join(map(str, labels_USCF_scale)))
 
 print str.join("\n", url)
+print
 
+
+
+#|= [AGA] |= [EGF] |= ([GoR]) |= China |= [Japan|NihonKiin] |= [Korea|Hankuk Kiwon] |= [IGS] |= [DGS] |= [KGS|KGSGoServer] |= [ORO|cyberoro] |= [Tygem] |= [OGS] |= Player |= Date
+#|      | 15k | (611)  |   |   |   | 15k |   | 11k  | 18k |   |   | karaklis        | 20090304
+#|    | 11k |  |   |   |   | 12k|12k   | 6k  | 14k    |   | 9k  | [ferl]      | 20090512
+#|      | 11k |        |   |   |   |     |11k|      |     |   |   | [Degan]       |20090512
+#|   |  |        |   |   |   |  10k   | 8k  |  5k    |     |   |   | jedwardh   | 20090422
+#| 9k   |  |  |   |   |   | |10k   | 4k  |     |   |   | cratus      | 20090304
+#|      |     |        |   |   |   |     |   | 10k  | 20k |   |   | takitano        | 20081220
+#|    | 7k |  |   |   |   | |  | 5k |     |   |   | yanor      | 20090421
+#|      | 6k  |        |   |   |   | 7k  |   | 4k   | 6k  |   |   | [PeterHB]       | 20090303
+#| 5k   |     |        |   |   |   |     |   | 7k   |     |   |   | [Impulse]       | 20090126
+#| 3k   |     |        |   |   |   |     |   | 3k   |     |   |   | [JohnAspinall]  | 20081114
+#| 2k   | 4k  |        |   |   |   |     |   |      |     |   |   | A. Salpietro    | 20090303
+#|      | 2k  |        |   |   |   | 2k  |   | 1k   |     |   |   | [tapir]         | 20090303
+#|      | 2k  | (1950)  |   |   |   |     |  | 1d   |     |   |   | Simon Zeckarias    |20090514
+#|      | 3k  | (1816) |   |   |   | 2k+ | 1d | 1d  |     |   |   | Frederic Ancher | 20090319
+#|      |     |        |   |   |   | 2k  |   | 1k   | 1k  |   |   | incognito_1     | 20080512
+#| 1d   | 2k  |        |   |   |   |     |   | 1k   |     |   |   | [Hicham]        | 20081114
+#|      | 1d  | (2097) |   |   |   |     |   |   1d |     |   |   | Sverre Haga | 20090427
+#|      | 1d  | (2100)  |   |   |   | 1d  |  | 2d   |     |   |   | Tomas Lechovsky    |20090515
+#|      | 1d  |        |   |   |   | 1k  |   | 1d   | 2d  |   |   | incognito_2     | 20081109
+#|      |     |        |   |   |   | 1d  |   | 2d   | 3d  |   |   | explo           | 20080823
+#|      | 2d  | (2140)  |   |   |   |     |  | 2d?  |     |   | 4d | [Uberdude]     | 20090517
+#| (2d) |     |        |   |   |   |     |   | 1d   | 3d  |   |   | [Tartuffe]      | 20080312
+#| 2d   |     |        |   |   |   |     |   | 1d   |     |   |   | [RobFerguson]   | 20081113
+#| 3.0d |     |        |   |   |   | 2k+ |   | 1.2d |     |   |   | [yoyoma]        | 20090119
+#| 3d   |     |        |   |   |   | 2d  |   |   2d |     |   |   | Dima Arinkin        | 20090507
+#|      |     |        |   |   |   |     |   | 2d   | 5d  |   |   | gougou          | 20080312
+#| 4d   |     |        |   |   |   |     |   | 3d   | 5d  |   |   | SColbert        | 20090122
+#|      | 1d  |        |   |   |   |     |   | 3d   | 6d  |   |   | [nexik]         | 20081109
+#|      | 2d  | (2225) |   |   |   |     |   | 4d   | 6d  |   |   | [kamyszyn]         | 20090505
+#| 5d   |     |        |   |   |   |     |   | 4d   |     |   |   | sol.ch          | 20081114
+#| 6d   |     |        |4d |   |   |5d-6d|4d |5d    |6d   |   |   |Nick Jhirad    |20090508
+#| 6d   | 3d  | (2350) |   |   |   |     |   | 5d   |     |   |   | Wang zi Guo     | 20090303
+#|    |   |  |   |   |   |     | 20k  | 14k   |     |   |   | pmurk     | 20090528
+#| 5d   | 4d  | (2409) |   |   |   |     |   |      |     |   |   | Willem Mallon   | 20090303
+#| 7d   | 5d  |        |   |   |   |     |   |      |     |   |   | Jean Michel     | 20090303
+#| 8d   | 6d  |        |   |   |   |     |   |      |     |   |   | Robert Mateescu | 20090303
+#| 8d   | 6d  |        |   |   |   |     |   |      |     |   |   | Sorin Gherman   | 20090303
+
+#| 9k   | 4k   | cratus          | 20090304
+#| 5k   | 7k   | [Impulse]       | 20090126
+#| 3k   | 3k   | [JohnAspinall]  | 20081114
+#| 1d   | 1k   | [Hicham]        | 20081114
+#| 2d   | 1d   | [RobFerguson]   | 20081113
+#| 3.0d | 1.2d | [yoyoma]        | 20090119
+#| 3d   |   2d | Dima Arinkin    | 20090507
+#| 4d   | 3d   | SColbert        | 20090122
+#| 5d   | 4d   | sol.ch          | 20081114
+#| 6d   | 5d   | Nick Jhirad     | 20090508
+#| 6d   | 5d   | Wang zi Guo     | 20090303
+
+class Point:
+   def __init__(self, kgs, aga):
+      self.kgs = kgs
+      self.aga = aga
+   def __str__(self):
+      return str(self.kgs) + str(self.aga)
+
+ratings = {}
+ratings["cratus"]       = Point(Rating("9k", "dankyu"), Rating("4k", "dankyu"))
+ratings["Impulse"]      = Point(Rating("5k", "dankyu"), Rating("7k", "dankyu"))
+ratings["JohnAspinall"] = Point(Rating("3k", "dankyu"), Rating("3k", "dankyu"))
+ratings["Hicham"]       = Point(Rating("1d", "dankyu"), Rating("1k", "dankyu"))
+ratings["RobFerguson"]  = Point(Rating("2d", "dankyu"), Rating("1d", "dankyu"))
+ratings["yoyoma"]       = Point(Rating("3d", "dankyu"), Rating("1d", "dankyu"))
+ratings["Dima Arinkin"] = Point(Rating("3d", "dankyu"), Rating("2d", "dankyu"))
+ratings["SColbert"]     = Point(Rating("4d", "dankyu"), Rating("3d", "dankyu"))
+ratings["sol.ch"]       = Point(Rating("5d", "dankyu"), Rating("4d", "dankyu"))
+ratings["Nick Jhirad"]  = Point(Rating("6d", "dankyu"), Rating("5d", "dankyu"))
+ratings["Wang zi Guo"]  = Point(Rating("6d", "dankyu"), Rating("5d", "dankyu"))
+
+rating_bins = {}
+
+for name, point in ratings.items():
+   key = (str(point.kgs), str(point.aga))
+   rating_bins.setdefault(key, [0, point])
+   rating_bins[key][0] += 1
+
+for k, v in rating_bins.items():
+   print k, v[0], v[1].kgs.rating
+
+print
+
+url = []
+url.append("http://chart.apis.google.com/chart?")
+url.append("&chs=300x300")
+url.append("&chtt=Rating+Histogram")
+url.append("&cht=s")
+#url.append("&chdl=AGA|EGF|KGS|USCF")
+#url.append("&chxt=x,y,t")
+#url.append("&chxtc=0,-900|1,-900|2,0")
+#url.append("&chco=%s,%s,%s,%s" % (red, green, blue, magenta))
+url.append("&chd=t:"   + ",".join([str(scale(x[1].kgs.rating, -10, 9)) for x in rating_bins.values()]))
+url.append("|"         + ",".join([str(scale(x[1].aga.rating, -10, 9)) for x in rating_bins.values()]))
+url.append("|"         + ",".join([str(x[0]*50)                   for x in rating_bins.values()]))
+#url.append("&chxp=0,"  + ",".join([str(scale(x.linear_weakest())) for x in labels_dankyu]))
+
+print str.join("\n", url)
 
