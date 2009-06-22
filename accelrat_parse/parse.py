@@ -19,24 +19,31 @@ class Game:
       self.winner = winner
       self.handicap = int(handicap)
       self.komi = int(komi)
-   def myopp(self, me):
+   def my_opp(self, me):
       if self.white == me: return self.black 
-      else: return self.white
+      else:                return self.white
    def handi_advantage(self):
-      handi_advantage = self.handicap
-      if self.komi == 5: pass
-      elif self.komi == 0: handi_advantage -= 0.5
-      elif self.komi == -5: handi_advantage -= 1
-      else: sys.exit("invalid self.komi:" + str(self.komi))
+      if self.handicap == 0:
+         if   self.komi ==  5: handi_advantage = 0.0
+         elif self.komi ==  0: handi_advantage = 0.5
+         elif self.komi == -5: handi_advantage = 1.0
+         else: sys.exit("invalid self.komi:" + str(self.komi))
+      else:
+         handi_advantage = self.handicap - 0.5
       return handi_advantage
    def rating_advantage(self):
       if (self.white.rating * self.black.rating) < 0 : 
          return self.white.rating - self.black.rating - 2   # compensate for dan/kyu border
       else:
          return self.white.rating - self.black.rating
-   def myresult(self, me):
+   def my_result(self, me):
       if self.white == me: return winner=="W"
-      else: return winner == "B"
+      else:                return winner=="B"
+   def white_advantage(self):
+      return self.rating_advantage() - self.handi_advantage()
+   def my_advantage(self, me):
+      if self.white == me: return self.white_advantage()
+      else:                return -self.white_advantage()
 
 players_byaga = {}
 
@@ -89,12 +96,16 @@ for player in players_byaga.values():
    print
    for game in player.round:
       print "<td>",
-      print game.myopp(player).name, "<br>",
-      print "opp rating", game.myopp(player).rating, "<br>",
-      print "win?", game.myresult(player), "<br>",
+      print game.my_opp(player).name, "<br>",
+      print "my curr rating", "<br>",
+      print "opp rating", game.my_opp(player).rating, "<br>",
+      print "win?", game.my_result(player), "<br>",
       print "handi", "%0.2f" % (game.handi_advantage()), "<br>",
-      print "rat diff", "%0.2f" % (game.rating_advantage()), 
+      print "rat diff", "%0.2f" % (game.rating_advantage()), "<br>",
+      print "my_adv", "%0.2f" %(game.my_advantage(player)), "<br>",
       print "</td>"
+      #if player.agaid == 9771 and game.my_opp(player).agaid == 4408:
+      #   print "<td>", player.rating, game.my_opp(player).rating, "<td>"
    print
    print "</tr>"
 print "</table>"
