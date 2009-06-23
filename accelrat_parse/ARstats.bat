@@ -105,7 +105,11 @@ arexe30 argames REGISTER /out=AR$LABEL
 if errorlevel 1 goto STOPBAT
 
 rem Combine tournament label, player attributes, and games into one file.
-copy AR$LABEL.TDE+AR$GAMES.TDE+AR$PLYRS.TDE SEND2AGA.TDE /b
+rem wineconsole doesn't like the "+" operator for copy.  Use alternate method.
+rem copy AR$LABEL.TDE+AR$GAMES.TDE+AR$PLYRS.TDE SEND2AGA.TDE /b
+copy AR$LABEL.TDE SEND2AGA.TDE /b
+type AR$GAMES.TDE >> SEND2AGA.TDE
+type AR$PLYRS.TDE >> SEND2AGA.TDE
 if errorlevel 1 goto STOPBAT
 
 rem
