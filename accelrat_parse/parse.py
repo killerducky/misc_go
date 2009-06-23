@@ -4,7 +4,6 @@ import re
 import sys
 import os
 
-
 class Player:
    def __init__(self, agaid, name, rating):
       self.agaid  = int(agaid)
@@ -50,7 +49,7 @@ players_byaga = {}
 f = open("register.tde")
 for line in f:
    line = line.rstrip()                # strip trailing whitespace including newline
-   line = re.sub("##.*", "", line)     # strip comments
+   line = re.sub("#.*", "", line)      # strip comments
    if len(line) == 0: continue         # if nothing left, continue
    m = line.split("\t")                
    agaid, name, rating = m[:3]
@@ -72,36 +71,38 @@ while (os.path.exists(str(round)+".tde")):
    f = open(str(round)+".tde")
    for line in f:
       line = line.rstrip()
-      line = re.sub("#.*", "", line)
+      line = re.sub("##.*", "", line)
       if len(line) == 0: continue
-      m = re.split("\s+", line)
-      white, black, winner, handicap, komi = m[:5]
+      m = re.split("\s*[#:]\s*", line)
+      tmp = m[0]
+      white, black, winner, handicap, komi = re.split("\s+", tmp)
       game = Game(white, black, winner, handicap, komi)
       players_byaga[white].round.append(game)
       players_byaga[black].round.append(game)
    f.close
    round += 1
 
+
 def tdwrap(td):
    return "<td>" + str(td) + "</td>"
 
 print "<table border=\"1\">"
-print "<tr><td>agaid</td><td>name</td><td>rating</td><td>truerat</td>",
+print "<tr><td>agaid</td><td>name</td><td>rating</td>",
 for x in range(1, round): print tdwrap(x)    
 print "</tr>"
 #print tdwrap(x) for x in range(1, round)     # why can't I do a comprehension here?
 for player in players_byaga.values():
-   for tmp in [player.agaid, player.name, player.rating, player.truerating]:
-      print "<td>", tmp, "</td>",
-   print
+   #for tmp in [player.agaid, player.name, player.rating, player.truerating]: print tdwrap(tmp)
+   print tdwrap(player.agaid), tdwrap(player.name)
+   print tdwrap("enter " + str(player.rating) + "<br>" + "true " + str(player.truerating))
    for game in player.round:
       print "<td>",
       print game.my_opp(player).name, "<br>",
-      print "my curr rating", "<br>",
-      print "opp rating", game.my_opp(player).rating, "<br>",
+      print "my_curr_rating", "<br>",
+      print "opp_rating", game.my_opp(player).rating, "<br>",
       print "win?", game.my_result(player), "<br>",
       print "handi", "%0.2f" % (game.handi_advantage()), "<br>",
-      print "rat diff", "%0.2f" % (game.rating_advantage()), "<br>",
+      print "rat_diff", "%0.2f" % (game.rating_advantage()), "<br>",
       print "my_adv", "%0.2f" %(game.my_advantage(player)), "<br>",
       print "</td>"
       #if player.agaid == 9771 and game.my_opp(player).agaid == 4408:
