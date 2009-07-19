@@ -165,7 +165,8 @@ def main():
                print "opp ", game.my_opp(player).name, "<br>",
                print "opp_rating %0.2f" % (game.my_opp(player).rating), "<br>",
                print "opp_curr_rating %0.2f" % (game.get_my_rating(game.my_opp(player))), "<br>",
-               print "win?", game.my_result(player), "<br>",
+               print ("<span style=\"color:#ff0000\">lost</span>", \
+                      "<span style=\"color:#00ff00\">won</span>")[game.my_result(player)], "<br>",
                print "handi", "%0.2f" % (game.handi_advantage()), "<br>",
                print "curr_rat_diff", "%0.2f" % (game.rating_advantage()), "<br>",
                print "curr_my_adv", "%0.2f" %(game.my_advantage(player)), "<br>",
@@ -177,7 +178,7 @@ def main():
                   print "handi=", "%0.1f" % (game.handi_advantage()), "<br>",
                else:
                   print "handi=", "%0.0f" % (game.handi_advantage()+0.5), "<br>",
-               print ("lose", "win")[game.my_result(player)], "<br>",
+               print ("lost", "won")[game.my_result(player)], "<br>",
          else:
             print "BYE <br>",
             if curr_round in player.new_rating:
